@@ -57,7 +57,7 @@ function make_url_html_post(url,id) {
 						"<hr />" +
 						"<div class='table-row-div'>" +
 							"<div class='table-cel-div'><img id='img"+id+"' src='x.png' /></div>" + 
-							"<div class='table-cel-div'>" + url + "</div>" +
+							"<div class='table-cel-div'>" + "<a href='"+url+"'>" + url + "</a></div>" +
 					 "</div>";
 	return return_str;
 }
