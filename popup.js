@@ -15,10 +15,12 @@ function clickHandler(e) {
 document.addEventListener('DOMContentLoaded', function () {
   document.querySelector('#but').addEventListener('click', clickHandler);
   refresh_urls();
-  
-  
-  
 });
+
+
+function urlClickHandler(e) {
+	chrome.tabs.create({ url: e.toElement.href }); 
+};
 
 function refresh_urls() {
 	var length = localStorage.length;
@@ -40,6 +42,9 @@ function display_urls(url_array) {
 	for(var i in url_array) {
 		document.getElementById("img"+i).addEventListener('click', delete_url);
 	}
+	for(var i in url_array) {
+		document.getElementById("url"+i).addEventListener('click', urlClickHandler);
+	}
 }
 
 function delete_url(mouseEvent) {
@@ -57,7 +62,7 @@ function make_url_html_post(url,id) {
 						"<hr />" +
 						"<div class='table-row-div'>" +
 							"<div class='table-cel-div'><img id='img"+id+"' src='x.png' /></div>" + 
-							"<div class='table-cel-div'>" + "<a href='"+url+"'>" + url + "</a></div>" +
+							"<div class='table-cel-div'>" + "<a id='url"+id+"' href='"+url+"'>" + url + "</a></div>" +
 					 "</div>";
 	return return_str;
 }
