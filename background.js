@@ -9,6 +9,8 @@ this.poop = "poo";
 
 chrome.tabs.onActivated.addListener(function(activeInfo) {	
 	chrome.tabs.get(activeInfo.tabId, function(tab) {
-		localStorage.setItem("last-active-url",tab.url);
+		localStorage.setItem("last-active-id",tab.id);
 	});
 });
+
+
