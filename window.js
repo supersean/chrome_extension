@@ -87,12 +87,11 @@ var browser = new function() {
 	function displayAllAds() {
 		console.log("displayAllAds");
 		
-		var ad_list = $("#stored-urls");
-		ad_list.empty();
-		
 		var store = getObjectStore(DB_STORE_NAME, 'readwrite');
 		var req;
 		var i = 0;
+		
+		var ad_list = $("#stored-urls");
 		
 		req = store.openCursor();	
 		req.onerror = function(evt) {
@@ -105,8 +104,10 @@ var browser = new function() {
 				console.log("displayAllAds: ",cursor);
 				req = store.get(cursor.key);
 				req.onsuccess = function(evt) {
+				
+					console.log("HELLO " + i);
 					var value = evt.target.result;
-					var list_item = "<li><img  key='" + cursor.key + "' id='img"+ i +"' src='x.png'/>[" + cursor.key + "] " + 
+					var list_item = "<li><img  key='" + cursor.key + "' id='img"+ i +"' src='x_icon.png'/>[" + cursor.key + "] " + 
 									"<div id='url"+ i +"' key='" + cursor.key + "'>" + value.ad_title + "</div></li>";
 					i++;
 					ad_list.append(list_item);
@@ -114,7 +115,7 @@ var browser = new function() {
 				cursor.continue();
 			} else {
 				console.log("No more entries");
-				addEventListeners();
+				addListListeners();
 			}
 		};
 	}
@@ -168,12 +169,12 @@ var browser = new function() {
 			};
 		};
 		req.onerror = function(evt) {
-		console.log("yoyoyo");
 			console.error("deleteAdvertisement1: ", evt.target.errorCode);
 		};
 		console.log(req);
 	}
 	function refreshAdvertisements() {
+		$("#stored-urls").empty();
 		displayAllAds();
 	}
 	
@@ -184,6 +185,7 @@ var browser = new function() {
 		});
 	}
 	function setUpGui() {
+		addEventListeners();
 		refreshAdvertisements();
 	}
 	function addDeleteListeners() {
@@ -225,7 +227,7 @@ var browser = new function() {
 					console.log(p + " : " + request.obj[p]);		
 				}		
 				var message = request.obj;
-				if(message.type === "ad_info") {
+				if(message.type === "ad-info") {
 					addAdvertisement(message);
 					refreshAdvertisements();
 				}
@@ -235,13 +237,12 @@ var browser = new function() {
 	}
 	function addEventListeners() {
 		console.log("addEventListeners ...");
-		document.querySelector('#but').addEventListener('click', addClickHandler);
+		$("#but").bind("click",addClickHandler);
+		addBrowserListeners();
+	}
+	function addListListeners() {
 		addDeleteListeners();
 		addAdvertisementListeners();
-		addBrowserListeners();
-		
-		
-		
 	}
 	
 	openDb();
