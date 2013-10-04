@@ -16,7 +16,7 @@ var browser = new function() {
 	var current_view_pub_key;
 	
 	const DB_NAME = "mydb";
-	const DB_VERSION = 1;
+	const DB_VERSION = 2;
 	const DB_STORE_NAME = "advertisements";
 	
 	function openDb() {
@@ -32,13 +32,15 @@ var browser = new function() {
 		};
 		req.onupgradeneeded = function(evt) {
 			console.log("openDb.onupgradeneeded");
+			evt.currentTarget.result.deleteObjectStore(DB_STORE_NAME);
 			var store = evt.currentTarget.result.createObjectStore(
 				DB_STORE_NAME, { keyPath: 'id', autoIncrement: true});
-			
+			console.log("heyo");
 			store.createIndex("ad_url","ad_url", { unique: true });
 			store.createIndex("date_added","date_added", { unique: false });
 			store.createIndex("ad_title","ad_title", { unique: false});
 			store.createIndex("ad_body","ad_body", {unique: false});
+			store.createIndex("ad_image","ad_image", {unique: false});
 		};
 	}
 	
@@ -65,7 +67,8 @@ var browser = new function() {
 		var obj = { ad_url: advertisement.posting_url, 
 					date_added: new Date().getDate(),
 					ad_title: advertisement.posting_title,
-					ad_body: advertisement.posting_body
+					ad_body: advertisement.posting_body,
+					ad_image: advertisement.image_src
 					};
 		var store = getObjectStore(DB_STORE_NAME, 'readwrite');
 		var req;
@@ -107,8 +110,9 @@ var browser = new function() {
 				
 					console.log("HELLO " + i);
 					var value = evt.target.result;
-					var list_item = "<li><img  key='" + cursor.key + "' id='img"+ i +"' src='x_icon.png'/>[" + cursor.key + "] " + 
-									"<div id='url"+ i +"' key='" + cursor.key + "'>" + value.ad_title + "</div></li>";
+					var list_item = "<li><div class='row'><img  key='" + cursor.key + "' id='img"+ i +"' src='x_icon.png'/>" + 
+									"<div class='expander' key='" + cursor.key + "' id='expander"+ i +"'>&gt;&gt;</div>" +
+									"<div class='content' id='url"+ i +"' key='" + cursor.key + "'><h4>" + value.ad_title + "</h4></div></li>";
 					i++;
 					ad_list.append(list_item);
 				};
@@ -140,6 +144,46 @@ var browser = new function() {
 		req.onerror = function(evt) {
 			console.log("openAdInNewTab error:", evt);
 		}
+	}
+	function expandAdvertisement(mouseEvent) {
+		console.log("expandAdvertisement",mouseEvent);
+		var element = $("#" + mouseEvent.toElement.id);
+		element.unbind('click');
+		element.bind('click',retractAdvertisement);
+		console.log("element",element);
+		element.text("retract");
+		var parent = element.parent();
+		var key = parseInt(element.attr("key"));
+		var store = getObjectStore(DB_STORE_NAME, 'readwrite');
+		var req = store.get(key);
+		req.onsuccess = function(evt) {
+			var record = evt.target.result;
+			console.log("record: ", record);
+			if(typeof record == 'undefined') {
+				console.log("no matching record found");
+				return;
+			}
+			expandAdHelper(record, element);
+		}
+		req.onerror = function(evt) {
+			console.log("expandAdvertisement error:", evt);
+		}
+	}
+	function expandAdHelper(record, element) {
+		console.log("expandAdHelper",record,element);
+		element.parent().append("<div id='info_box" + element.key + "' class='expanded_info_box'>" + 
+					"<img src='" + record.ad_url + "' />" +
+					"<p>" + record.ad_body + "</p>" +
+					"</div>");
+						
+	}
+	function retractAdvertisement(mouseEvent) {
+		console.log("retractAdvertisement",mouseEvent);
+		var element = $("#" + mouseEvent.toElement.id);
+		element.unbind('click');
+		element.bind('click',expandAdvertisement);
+		element.text("expand");
+		$("#info_box" + element.key).remove();
 	}
 	function deleteAdvertisement(mouseEvent) {
 		console.log("deleteAdvertisement",mouseEvent);
@@ -180,8 +224,7 @@ var browser = new function() {
 	
 	function addClickHandler(mouse_event) {
 		var tabid = parseInt(localStorage.getItem("last-active-id"));
-		chrome.tabs.sendMessage(tabid, { type : "ad-info" }, function(response) {
-			console.log("response is back");
+		chrome.tabs.sendMessage(tabid, { type : "ad_info" }, function(response) {
 		});
 	}
 	function setUpGui() {
@@ -211,7 +254,8 @@ var browser = new function() {
 		req = store.count();
 		req.onsuccess = function(evt) {
 			for(var i = 0; i < evt.target.result; i++) {
-				document.querySelector("#url"+i).addEventListener('click',openAdInNewTab);
+				$("#url"+i).bind('click',openAdInNewTab);
+				$("#expander"+i).bind('click',expandAdvertisement);			
 			}
 		}
 		req.onerror = function(evt) {
@@ -227,7 +271,8 @@ var browser = new function() {
 					console.log(p + " : " + request.obj[p]);		
 				}		
 				var message = request.obj;
-				if(message.type === "ad-info") {
+				if(message.type === "ad_info") {
+					console.log("hello");
 					addAdvertisement(message);
 					refreshAdvertisements();
 				}
