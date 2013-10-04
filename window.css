@@ -1,0 +1,42 @@
+img {
+	float:left;
+	margin:10px;
+	}
+
+.row {	
+	margin:0px 0 0px 0px;
+	background-color:#ffffff;
+	border-top:1px solid #dfdfdf;
+	border-left:1px solid #dfdfdf;
+	border-bottom:1px solid #ababab;
+	border-right:1px solid #ababab;
+	padding: 10px 10px 10px 10px;
+	max-width:500px;
+	min-height:45px;
+}
+
+.content {
+	
+	width:90%;
+}
+
+.expander {
+	float:right;
+	padding:10px;
+	}
+
+ul {
+	list-style-type:none;
+	}
+
+body {
+	font-family:helvetica;
+	background-color:#efefef;
+}
+
+#but {
+	background-color:purple;
+	color:white;
+	border:none;
+	padding:10px;
+}
