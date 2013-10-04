@@ -13,7 +13,8 @@ function sendAdInfo() {
 		posting_title : $(".postingtitle").text(),
 		posting_body : $("#postingbody").text(),
 		posting_url : document.URL,
-		type : "ad_info"
+		type : "ad_info",
+		image_src : $("#ci img").attr("src")
 	};
 	
 	browser.sendMessage(obj);
