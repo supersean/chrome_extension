@@ -32,7 +32,11 @@ var browser = new function() {
 		};
 		req.onupgradeneeded = function(evt) {
 			console.log("openDb.onupgradeneeded");
-			evt.currentTarget.result.deleteObjectStore(DB_STORE_NAME);
+			try {
+				evt.currentTarget.result.deleteObjectStore(DB_STORE_NAME);
+			} catch (exception) {
+				console.log("DB STORE not found.");
+			}
 			var store = evt.currentTarget.result.createObjectStore(
 				DB_STORE_NAME, { keyPath: 'id', autoIncrement: true});
 			console.log("heyo");
@@ -108,11 +112,15 @@ var browser = new function() {
 				req = store.get(cursor.key);
 				req.onsuccess = function(evt) {
 				
-					console.log("HELLO " + i);
 					var value = evt.target.result;
-					var list_item = "<li><div class='row'><img  key='" + cursor.key + "' id='img"+ i +"' src='x_icon.png'/>" + 
-									"<div class='expander' key='" + cursor.key + "' id='expander"+ i +"'>&gt;&gt;</div>" +
-									"<div class='content' id='url"+ i +"' key='" + cursor.key + "'><h4>" + value.ad_title + "</h4></div></li>";
+						var list_item = "<li>" +
+									"<img class='thumb-img' src='" + value.ad_image + "' />" +
+									"<div class='row' id='row"+i+"' key='"+cursor.key+"'>" +
+										"<div class='deleter' key='" + cursor.key + "' id='deleter"+ i +"'>&#10006;</div>" + 
+										"<div class='content' id='content"+i+"' key='"+cursor.key+"'>"+value.ad_title+"</div>" +
+									"<button class='expander' key='" + cursor.key + "' id='expander"+ i +"'>more</button>" +
+									"</div>" +
+									"</li>";
 					i++;
 					ad_list.append(list_item);
 				};
@@ -124,11 +132,14 @@ var browser = new function() {
 		};
 	}
 	function openAdInNewTab(mouseEvent) {
+		event.stopPropagation();
 		console.log("openAdInNewTab",mouseEvent);
-		var div = mouseEvent.toElement;
-		var id = parseInt(div.getAttribute("key"));
+		var element = $("#"+mouseEvent.toElement.id);
+		console.log("element: ",element);
+			var id = parseInt(element.attr("key"));
 		var store = getObjectStore(DB_STORE_NAME, 'readwrite');
 		var req;
+		console.log("id is " , id);
 		req = store.get(id);
 		req.onsuccess = function(evt) {
 			var record = evt.target.result;
@@ -146,12 +157,13 @@ var browser = new function() {
 		}
 	}
 	function expandAdvertisement(mouseEvent) {
+		event.stopPropagation();
 		console.log("expandAdvertisement",mouseEvent);
 		var element = $("#" + mouseEvent.toElement.id);
 		element.unbind('click');
 		element.bind('click',retractAdvertisement);
 		console.log("element",element);
-		element.text("retract");
+		element.text("less");
 		var parent = element.parent();
 		var key = parseInt(element.attr("key"));
 		var store = getObjectStore(DB_STORE_NAME, 'readwrite');
@@ -171,18 +183,20 @@ var browser = new function() {
 	}
 	function expandAdHelper(record, element) {
 		console.log("expandAdHelper",record,element);
-		element.parent().append("<div id='info_box" + element.key + "' class='expanded_info_box'>" + 
-					"<img src='" + record.ad_url + "' />" +
+		element.parent().append(
+					"<div id='info_box" + element.key + "' class='expanded_info_box'>" + 
+					"<hr >" +
 					"<p>" + record.ad_body + "</p>" +
 					"</div>");
 						
 	}
 	function retractAdvertisement(mouseEvent) {
+		event.stopPropagation();
 		console.log("retractAdvertisement",mouseEvent);
 		var element = $("#" + mouseEvent.toElement.id);
 		element.unbind('click');
 		element.bind('click',expandAdvertisement);
-		element.text("expand");
+		element.text("more");
 		$("#info_box" + element.key).remove();
 	}
 	function deleteAdvertisement(mouseEvent) {
@@ -223,6 +237,7 @@ var browser = new function() {
 	}
 	
 	function addClickHandler(mouse_event) {
+		console.log("hey sendig mes");
 		var tabid = parseInt(localStorage.getItem("last-active-id"));
 		chrome.tabs.sendMessage(tabid, { type : "ad_info" }, function(response) {
 		});
@@ -239,7 +254,7 @@ var browser = new function() {
 		req = store.count();
 		req.onsuccess = function(evt) {
 			for(var i=0; i < evt.target.result; i++) {
-				document.querySelector('#img'+i).addEventListener('click',deleteAdvertisement);
+				document.querySelector('#deleter'+i).addEventListener('click',deleteAdvertisement);
 			}
 		}
 		req.onerror = function(evt) {
@@ -254,8 +269,9 @@ var browser = new function() {
 		req = store.count();
 		req.onsuccess = function(evt) {
 			for(var i = 0; i < evt.target.result; i++) {
-				$("#url"+i).bind('click',openAdInNewTab);
-				$("#expander"+i).bind('click',expandAdvertisement);			
+				$("#expander"+i).bind('click',expandAdvertisement);
+				$("#row"+i).bind('click',openAdInNewTab);
+				$("#content").bind('click', openAdInNewTab);			
 			}
 		}
 		req.onerror = function(evt) {
@@ -266,13 +282,11 @@ var browser = new function() {
 		console.log("addBrowserListeners ...");
 		chrome.extension.onMessage.addListener(
 			function(request, sender, sendResponse) {
-				console.log("sup : " + request);
 				for(var p in request.obj) {
 					console.log(p + " : " + request.obj[p]);		
 				}		
 				var message = request.obj;
 				if(message.type === "ad_info") {
-					console.log("hello");
 					addAdvertisement(message);
 					refreshAdvertisements();
 				}
@@ -292,10 +306,10 @@ var browser = new function() {
 	
 	openDb();
 	
+
+
 })();
 
 
 
 
-
-// attempt at message passing

@@ -1,3 +1,6 @@
+
+console.log('chrome-extension://__MSG_@@extension_id__')
+
 var browser = new function() {
   this.name = "chrome",
 	this.sendMessage = function(message) {
@@ -16,10 +19,17 @@ function sendAdInfo() {
 		type : "ad_info",
 		image_src : $("#ci img").attr("src")
 	};
-	
+	console.log("obj", obj);
 	browser.sendMessage(obj);
 };
 
+
+
+var body = $("body");
+$.get('chrome-extension://__MSG_@@extension_id__/test.html', function(html) {
+	console.log("hello html is ", html);
+	$(".body").prepend(html);
+});
 
 chrome.extension.onMessage.addListener(
 	function(request, sender, sendResponse) {
