@@ -13,12 +13,5 @@ chrome.tabs.onActivated.addListener(function(activeInfo) {
 	});
 });
 
-chrome.windows.create( {
-			"url" : chrome.extension.getURL("test.html"),
-			"height" : 654,
-			"width" : 484,
-			"type" : "popup",
-			"focused" : true
-});
 
 

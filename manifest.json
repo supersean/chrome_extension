@@ -22,11 +22,11 @@
 	"content_scripts": [
 	{
 	"matches": ["*://*/*"],
-	"js": ["jquery-2.0.3.min.js","content_script.js"],
-	"css": ["test.css"]
+	"js": ["angular.min.js","jquery-2.0.3.min.js","content_script.js"],
+	"css": ["window.css"]
 	}
 	],
 
-	"web_accessible_resources": ["jquery-2.0.3.min.map"]
+	"web_accessible_resources": ["angular.min.js","jquery-2.0.3.min.map", "window.html","window.js","adList.js","scripts.html"]
 }
 	

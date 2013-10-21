@@ -1,19 +1,20 @@
-<!doctype html>
-<html>
-<head>
-	<script src="jquery-2.0.3.min.js"></script>
-    <script src="window.js"></script>
-	
-	<link rel="stylesheet" type="text/css" href="window.css" />
-	
-</head>
-<body>
+ 
+<div id='side-bar'>
+  
+<div ng-app="listApp" >
 
+  <div ng-controller="ListCtrl">
+    <ul>
+      <li ng-repeat="item in list">
+        {{item.ad_title}},{{item.ad_body}},{{item.id}}
+      </li>
+    </ul>
+    <p>
+      {{name}}
+    </p>
+  </div>
 
+</div>
 
-<button id='but' type="button" >Store url</button>
-
-<ul id='stored-urls'></ul>
-</body>
-</html> 
-
+  
+</div>
