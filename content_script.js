@@ -84,37 +84,33 @@ var db1 = new function() {
 
 };
 
-
-function getAllAds( callback) {
-	console.log('getAllAds ...');
-	items = [];
-	db1.getAdvertisements(function(returnObj) {
-		for(var i = 0; i < returnObj.length; i++) {
-			items.push(returnObj[i]);
-		}
-		callback(items);
-	});
-}
-
 db1.openDb(initAngular);
 
 //angular init
 function initAngular() {
 	console.log("initAngular ...");
 	var listApp = angular.module('listApp', []);
-	listApp.factory("listService", function(){
-		return {
-			getList : getAllAds
-		};
-	});
-	listApp.controller("ListCtrl", ["$scope", "listService", function($scope, listService) {
-			$scope.name = "hello name";
-			listService.getList(function(items){
-				console.log("anony...", items);
-				$scope.list = items;
-				console.log($scope);
+	listApp.controller("ListCtrl", ["$scope", "$q", function($scope, $q) {
+		$scope.name = "hello name";
+		$scope.list = [];
+		var defer = $q.defer();
+		
+		var getList = function() {
+			db1.getAdvertisements(function(returnObj){
+				items = [];
+				for(var i = 0; i < returnObj.length; i++) {
+					items.push(returnObj[i]);
+				}
+				defer.resolve(items);
+				$scope.$apply();
 			});
-		}]);
+			return defer.promise;
+		}
+		var promise = getList().then(function(items) {
+				$scope.list = items;
+			})
+			
+	}]);
 
 	var body = $("body");
 	$.get(chrome.extension.getURL("window.html"), function(html) {
