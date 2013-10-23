@@ -1,3 +1,4 @@
+
 var db1 = new function() {
 
 	this.db;
@@ -86,6 +87,20 @@ var db1 = new function() {
 
 db1.openDb(initAngular);
 
+function getItem(key, callback) {
+	chrome.runtime.sendMessage({method:"getItem", key:key}, function(item) {
+		callback(item);
+	});	
+}
+
+function saveItem(key, value) {
+	chrome.runtime.sendMessage({method:"setItem",key:key, value:value}, function(received) {
+		if(received) {
+			console.log(" saved successfully"); 
+		}
+	});
+}
+
 //angular init
 function initAngular() {
 	console.log("initAngular ...");
@@ -93,8 +108,24 @@ function initAngular() {
 	listApp.controller("ListCtrl", ["$scope", "$q", function($scope, $q) {
 		$scope.name = "hello name";
 		$scope.list = [];
+
+		$scope.addItem = function(key) {
+			var value;
+			if(key == "url") {
+				value = document.URL;
+			}
+			saveItem(key, value);
+		}
+
+		$scope.getItem = function(key) {
+			console.log("getItem item is ", key);
+			getItem(key, function(item) {
+				console.log("callbacked item is ", item);
+			});
+		}
+
 		var defer = $q.defer();
-		
+
 		var getList = function() {
 			db1.getAdvertisements(function(returnObj){
 				items = [];

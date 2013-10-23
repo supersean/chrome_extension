@@ -5,7 +5,13 @@
 
   <div ng-controller="ListCtrl">
 
-  	
+  	<form ng-submit="addItem('url')">
+  		<input class="btn-primary" type="submit" value="add">
+  	</form>
+  	<form ng-submit="getItem('url')">
+  		<input class="btn-primary" type="submit" value="get">
+  	</form>
+
 
     <ul>
       <li ng-repeat="item in list">

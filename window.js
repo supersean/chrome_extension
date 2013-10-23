@@ -7,6 +7,10 @@ var browser = new function() {
 
 
 
+function storeObj(obj) {
+	
+}
+
 //indexed db stuff
 
 (function() {
