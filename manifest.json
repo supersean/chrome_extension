@@ -4,6 +4,7 @@
   "name": "Craigslist Ad-saver",
   "description": "Gives you a window to save ads with on craigslist, so you can revisit them later.",
   "version": "1.0",
+
 	
   "permissions": [
 	"http://*/*",
@@ -22,11 +23,24 @@
 	"content_scripts": [
 	{
 	"matches": ["*://*/*"],
-	"js": ["angular.min.js","jquery-2.0.3.min.js","content_script.js"],
+	"js": ["addons/angular.min.js",
+		"addons/require.js",
+		"addons/jquery-2.0.3.min.js",
+		"content_script.js",
+		"jasmine/lib/jasmine.js",
+		"jasmine/lib/jasmine.console_reporter.js",
+		"test.js"
+		],
+
 	"css": ["window.css"]
 	}
 	],
 
-	"web_accessible_resources": ["angular.min.js","jquery-2.0.3.min.map", "window.html","window.js","adList.js","scripts.html"]
+	"web_accessible_resources": ["addons/angular.min.js",
+		"addons/jquery-2.0.3.min.map", 
+		"window.html","window.js",
+		"adList.js",
+		"scripts.html"
+		]
 }
 	

@@ -1,3 +1,126 @@
+initAngular();
+
+function getItem(key, callback) {
+	chrome.runtime.sendMessage({method:"getItem", key:key}, function(item) {
+		callback(item);
+	});	
+}
+
+function saveItem(key, value) {
+	chrome.runtime.sendMessage({method:"setItem",key:key, value:value}, function(received) {
+		if(received) {
+			console.log(" saved successfully"); 
+		}
+	});
+}
+
+function initAngular() {
+	console.log("initAngular ...");
+	var listApp = angular.module('listApp', []);
+	listApp.controller("ListCtrl", ["$scope", "$q", function($scope, $q) {
+		$scope.name = "hello name";
+		$scope.list = [];
+
+		$scope.setItem = function(key) {
+			var value;
+			if(key == "adObject") {
+				value = document.URL;
+			}
+			var item = {
+
+			}
+			saveItem(key, value);
+		}
+
+		$scope.getItem = function(key) {
+			console.log("getItem item is ", key);
+			getItem(key, function(item) {
+				console.log("callbacked item is ", item);
+			});
+		}
+	}]);
+}
+
+/*
+		var defer = $q.defer();
+
+		var getList = function() {
+			db1.getAdvertisements(function(returnObj){
+				items = [];
+				for(var i = 0; i < returnObj.length; i++) {
+					items.push(returnObj[i]);
+				}
+				defer.resolve(items);
+				$scope.$apply();
+			});
+			return defer.promise;
+		}
+		var promise = getList().then(function(items) {
+				$scope.list = items;
+			})
+			
+	}]);
+
+	var body = $("body");
+	$.get(chrome.extension.getURL("window.html"), function(html) {
+		$(".body").prepend(html);
+		angular.bootstrap(document.body, ['listApp']);
+	});
+}
+
+chrome.extension.onMessage.addListener(
+	function(request, sender, sendResponse) {
+		console.log("onMessage ..." + request);
+			
+	});
+
+
+
+
+
+
+
+/*
+var browser = new function() {
+  this.name = "chrome",
+	this.sendMessage = function(message) {
+		console.log("TESTING");
+		chrome.runtime.sendMessage( { obj : message }, function(response) {
+			console.log(response);
+		});
+	}
+};
+
+function sendAdInfo() {
+	var obj = { 
+		posting_title : $(".postingtitle").text(),
+		posting_body : $("#postingbody").text(),
+		posting_url : document.URL,
+		type : "ad_info",
+		image_src : $("#ci img").attr("src")
+	};
+	console.log("obj", obj);
+	browser.sendMessage(obj);
+};
+
+
+
+var body = $("body");
+$.get(chrome.extension.getURL("window.html"), function(html) {
+	console.log("hello html is ", html);
+	$(".body").prepend(html);
+
+
+var browser = new function() {
+	this.name = "chrome",
+	this.openNewTab = function(url) {
+		chrome.tabs.create({ url: url });
+	}
+};
+
+
+
+
 
 var db1 = new function() {
 
@@ -85,127 +208,5 @@ var db1 = new function() {
 
 };
 
-db1.openDb(initAngular);
-
-function getItem(key, callback) {
-	chrome.runtime.sendMessage({method:"getItem", key:key}, function(item) {
-		callback(item);
-	});	
-}
-
-function saveItem(key, value) {
-	chrome.runtime.sendMessage({method:"setItem",key:key, value:value}, function(received) {
-		if(received) {
-			console.log(" saved successfully"); 
-		}
-	});
-}
-
-//angular init
-function initAngular() {
-	console.log("initAngular ...");
-	var listApp = angular.module('listApp', []);
-	listApp.controller("ListCtrl", ["$scope", "$q", function($scope, $q) {
-		$scope.name = "hello name";
-		$scope.list = [];
-
-		$scope.addItem = function(key) {
-			var value;
-			if(key == "url") {
-				value = document.URL;
-			}
-			saveItem(key, value);
-		}
-
-		$scope.getItem = function(key) {
-			console.log("getItem item is ", key);
-			getItem(key, function(item) {
-				console.log("callbacked item is ", item);
-			});
-		}
-
-		var defer = $q.defer();
-
-		var getList = function() {
-			db1.getAdvertisements(function(returnObj){
-				items = [];
-				for(var i = 0; i < returnObj.length; i++) {
-					items.push(returnObj[i]);
-				}
-				defer.resolve(items);
-				$scope.$apply();
-			});
-			return defer.promise;
-		}
-		var promise = getList().then(function(items) {
-				$scope.list = items;
-			})
-			
-	}]);
-
-	var body = $("body");
-	$.get(chrome.extension.getURL("window.html"), function(html) {
-		$(".body").prepend(html);
-		angular.bootstrap(document.body, ['listApp']);
-	});
-}
-
-
-
-
-
-
-
-
-
-/*
-var browser = new function() {
-  this.name = "chrome",
-	this.sendMessage = function(message) {
-		console.log("TESTING");
-		chrome.runtime.sendMessage( { obj : message }, function(response) {
-			console.log(response);
-		});
-	}
-};
-
-function sendAdInfo() {
-	var obj = { 
-		posting_title : $(".postingtitle").text(),
-		posting_body : $("#postingbody").text(),
-		posting_url : document.URL,
-		type : "ad_info",
-		image_src : $("#ci img").attr("src")
-	};
-	console.log("obj", obj);
-	browser.sendMessage(obj);
-};
-
-
-
-var body = $("body");
-$.get(chrome.extension.getURL("window.html"), function(html) {
-	console.log("hello html is ", html);
-	$(".body").prepend(html);
-
-
-var browser = new function() {
-	this.name = "chrome",
-	this.openNewTab = function(url) {
-		chrome.tabs.create({ url: url });
-	}
-};
-
-
-
-chrome.extension.onMessage.addListener(
-	function(request, sender, sendResponse) {
-		console.log("sup : " + request.type);
-		
-		if(request.type === "ad_info") {
-			sendAdInfo();
-		}
-		sendResponse('Found!');
-	});
 
 */
