@@ -81,8 +81,8 @@ function returnItem(item) {
 //				maybe a request.callback = some function
 //for setting an adObject:
 //				request.method = setItem
-//				request.key = adObject
-//				request.value = an ad object consisting of:
+//				request.item.key = adObject
+
 chrome.runtime.onMessage.addListener(
 	function(request, sender, sendResponse) {
 		console.log("request is ", request);

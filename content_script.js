@@ -23,20 +23,21 @@ function initAngular() {
 
 		$scope.setItem = function(key) {
 			var value;
+			var object;
 			if(key == "adObject") {
-				value = document.URL;
+				//construct adObject from page
+				object.url = document.URL;
 			}
-			var item = {
-
-			}
-			saveItem(key, value);
+			setItem(object, chromeSetItem);
 		}
 
 		$scope.getItem = function(key) {
 			console.log("getItem item is ", key);
-			getItem(key, function(item) {
-				console.log("callbacked item is ", item);
-			});
+			var object;
+			object.key = key;
+			object.index = 0;
+			object.callback = function(){ console.log("in object.callback")};
+			getItem(object, chromeGetItem);
 		}
 	}]);
 }
