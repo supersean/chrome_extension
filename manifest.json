@@ -29,16 +29,22 @@
 		"content_script.js",
 		"jasmine/lib/jasmine.js",
 		"jasmine/lib/jasmine.console_reporter.js",
-		"test.js"
+		"test.js",
+    "addons/bootstrap/js/bootstrap.js"
 		],
 
-	"css": ["window.css"]
+	"css": ["window.css", 
+  "addons/bootstrap/css/bootstrap-theme.css",
+  "addons/bootstrap/css/bootstrap.css",
+  "addons/bootstrap/fonts/glyphicons-halflings-regular.svg"]
 	}
 	],
 
 	"web_accessible_resources": ["addons/angular.min.js",
 		"addons/jquery-2.0.3.min.map", 
-		"window.html","window.js",
+		"navbar.html",
+    "window.js",
+    "window.html",
 		"adList.js",
 		"scripts.html"
 		]

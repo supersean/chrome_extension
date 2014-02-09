@@ -1,3 +1,13 @@
+	var body = $("body");
+	$.get(chrome.extension.getURL("window.html"), function(html) {
+		$(html).prependTo('#pagecontainer');
+		$.get(chrome.extension.getURL("navbar.html"), function(html2) {
+			$(html2).prependTo('#pagecontainer');
+			$('.body').prependTo('#seans_container');
+			angular.bootstrap(document.body, ['listApp']);
+
+		});
+	});
 initAngular();
 
 function getItem(key, callback) {
@@ -24,6 +34,7 @@ function initAngular() {
 		$scope.setItem = function(key) {
 			var value;
 			var object;
+			console.log("hello");
 			if(key == "adObject") {
 				//construct adObject from page
 				object.url = document.URL;
@@ -41,8 +52,8 @@ function initAngular() {
 		}
 	}]);
 }
-
 /*
+
 		var defer = $q.defer();
 
 		var getList = function() {
@@ -61,13 +72,9 @@ function initAngular() {
 			})
 			
 	}]);
+*/
 
-	var body = $("body");
-	$.get(chrome.extension.getURL("window.html"), function(html) {
-		$(".body").prepend(html);
-		angular.bootstrap(document.body, ['listApp']);
-	});
-}
+
 
 chrome.extension.onMessage.addListener(
 	function(request, sender, sendResponse) {
@@ -81,7 +88,7 @@ chrome.extension.onMessage.addListener(
 
 
 
-/*
+
 var browser = new function() {
   this.name = "chrome",
 	this.sendMessage = function(message) {
@@ -105,7 +112,7 @@ function sendAdInfo() {
 };
 
 
-
+/*
 var body = $("body");
 $.get(chrome.extension.getURL("window.html"), function(html) {
 	console.log("hello html is ", html);

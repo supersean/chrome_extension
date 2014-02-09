@@ -2,9 +2,13 @@
 	background-color:#dbdbdb;
 	height:100%;
 	width:200px;
-	position:absolute;
-	top:0px;
-	left:0px;
+	float:left;
+}
+
+.navbar-nav > li > .btn {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  line-height: 20px;
 }
 
 /*
