@@ -14,46 +14,15 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       
-      <div ng-app="listApp" >
-
-        <div ng-controller="ListCtrl">
-
           <form class="navbar-form navbar-left" ng-submit="setItem('adObject')">
             <button type="submit" class="btn btn-default">Add page</button>
           </form>
           <form class="navbar-form navbar-left" ng-submit="getItem('adObject')">
             <button type="submit" class="btn btn-default">Get</button>
           </form>
-        </div>
-      </div>
-      <button class="btn btn-default navbar-btn navbar-right">Show list</button>
+          <button ng-click="showList()" class="btn btn-default navbar-btn navbar-right">Show list</button>
+      
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
 
-
- <!--
-  <div id='side-bar'>
-    
-    <div ng-app="listApp" >
-
-      <div ng-controller="ListCtrl">
-
-      	<form ng-submit="setItem('adObject')">
-          <button type="submit" class="btn btn-default">Add page</button>
-      	</form>
-      	<form ng-submit="getItem('adObject')">
-          <button type="submit" class="btn btn-default">Get</button>
-      	</form>
-        <ul>
-          <li ng-repeat="item in list">
-            {{item.ad_title}},{{item.ad_body}},{{item.id}}
-          </li>
-        </ul>
-        <p>
-          {{name}}
-        </p>
-      </div>
-    </div> 
-  </div>
--->

@@ -5,48 +5,54 @@
   "description": "Gives you a window to save ads with on craigslist, so you can revisit them later.",
   "version": "1.0",
 
-	
   "permissions": [
-	"http://*/*",
-	"storage",
-	"tabs",
-	"background"
+  	"http://*/*",
+  	"storage",
+  	"tabs",
+  	"background"
   ],
   "browser_action": {
     "default_icon": "icon.png"
   },
   
   "background": {
-	"scripts": ["background.js"]
+    "page": "background.html"
 	},
 	
 	"content_scripts": [
-	{
-	"matches": ["*://*/*"],
-	"js": ["addons/angular.min.js",
-		"addons/require.js",
-		"addons/jquery-2.0.3.min.js",
-		"content_script.js",
-		"jasmine/lib/jasmine.js",
-		"jasmine/lib/jasmine.console_reporter.js",
-		"test.js",
-    "addons/bootstrap/js/bootstrap.js"
-		],
+  	{
+    	"matches": ["*://*/*"],
+    	"js": [
+        "addons/angular.min.js",
+    		"addons/jquery-2.0.3.min.js",
+    		"content_script.js",
+    		"jasmine/lib/jasmine.js",
+    		"jasmine/lib/jasmine.console_reporter.js",
+    		"test.js",
+        "addons/bootstrap/js/bootstrap.js",
+        "addons/require.js"
+    	],
 
-	"css": ["window.css", 
-  "addons/bootstrap/css/bootstrap-theme.css",
-  "addons/bootstrap/css/bootstrap.css",
-  "addons/bootstrap/fonts/glyphicons-halflings-regular.svg"]
-	}
+    	"css": [
+        "window.css", 
+        "addons/bootstrap/css/bootstrap-theme.css",
+        "addons/bootstrap/css/bootstrap.css",
+        "addons/bootstrap/fonts/glyphicons-halflings-regular.svg"
+      ]
+  	}
 	],
 
-	"web_accessible_resources": ["addons/angular.min.js",
+	"web_accessible_resources": [
+    "addons/angular.min.js",
 		"addons/jquery-2.0.3.min.map", 
+    "addons/require.js",
 		"navbar.html",
     "window.js",
     "window.html",
 		"adList.js",
-		"scripts.html"
-		]
+		"scripts.html",
+    "list.html",
+    "constants/db_constants.js"
+	]
 }
 	

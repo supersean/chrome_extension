@@ -1,21 +1,37 @@
 
 this.poop = "poo";
 
+require(["constants/db_constants.js"], function(util) {
+	initBackground();
+});
 
-var CONST_KEY_AD_OBJECT = "adObject";
-var CONST_KEY_AD_OBJECTS = "adObjects";
-var CONST_KEY_SET_ITEM = "setItem";
-var CONST_KEY_GET_ITEM = "getItem";
+function initBackground() {
+	chrome.runtime.onMessage.addListener(
+	function(request, sender, sendResponse) {
+		console.log("request is ", request);
+		console.log("method is ",request.method);
+		if(request.method == CONST_KEY_GET_ITEM) {
+			getItem(request);
+		} else if (request.method == CONST_KEY_SET_ITEM) {
+			setItem(request);
+		} else {
+			return false;
+		}
+		return true;
+	});
+}
 
 function checkForDiscordances() {
 	console.log("checkForDiscordances...");
 }
 
 function setItem(item) {
+	console.log("setItem...", item);
 	//possibly validate item.value
 	if(item.key == CONST_KEY_AD_OBJECT) {
 		chrome.storage.sync.get("adObjects", function(adObjects) {
 			//check for adobjects is null
+			console.log(adObjects);
 			if(adObjects.index == null) {
 				adObjects.index = 0;
 			} else {
@@ -27,6 +43,7 @@ function setItem(item) {
 			saveAd(adObjects, item.value);
 		}); 
 	}
+	console.log("item.key not set correctly");
 }
 
 function saveAd(adObjects, value) {
@@ -83,14 +100,5 @@ function returnItem(item) {
 //				request.method = setItem
 //				request.item.key = adObject
 
-chrome.runtime.onMessage.addListener(
-	function(request, sender, sendResponse) {
-		console.log("request is ", request);
-		if(request.method == CONST_KEY_GET_ITEM) {
-			getItem(request);
-		} else if (request.method == CONST_KEY_SET_ITEM) {
-			setItem(request);
-		}
-		return true;
-	});
+
 

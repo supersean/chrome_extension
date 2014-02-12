@@ -1,14 +1,36 @@
+
+$.get(chrome.extension.getURL("constants/db_constants.js"), function(html) {
+	//Assuming your host supports both http and https
+	console.log(html);
+	var script = document.createElement('script');
+	script.setAttribute("type", "text/javascript");
+	script.setAttribute("src", chrome.extension.getURL("constants/db_constants.js"));
+	var head = document.head || document.getElementsByTagName( "head" )[0] || document.documentElement;
+	head.insertBefore(script, head.firstChild);
+	initPage();
+});	
+
+
+function initPage() {
+
 	var body = $("body");
 	$.get(chrome.extension.getURL("window.html"), function(html) {
 		$(html).prependTo('#pagecontainer');
 		$.get(chrome.extension.getURL("navbar.html"), function(html2) {
 			$(html2).prependTo('#pagecontainer');
-			$('.body').prependTo('#seans_container');
-			angular.bootstrap(document.body, ['listApp']);
-
+			$.get(chrome.extension.getURL("list.html"), function(html3) {
+				$(html3).prependTo('#pagecontainer');
+				$('.body').prependTo('#seans_container');
+				$('#pagecontainer').attr('ng-app','listApp');
+				$('#pagecontainer').attr('ng-controller','ListCtrl');
+				angular.bootstrap(document.body, ['listApp']);
+			});
 		});
 	});
-initAngular();
+	console.log(CONST_KEY_AD_OBJECT);
+	initAngular();
+
+}
 
 function getItem(key, callback) {
 	chrome.runtime.sendMessage({method:"getItem", key:key}, function(item) {
@@ -16,7 +38,8 @@ function getItem(key, callback) {
 	});	
 }
 
-function saveItem(key, value) {
+function setItem(key, value) {
+	console.log("content_script : setItem...",key, value)
 	chrome.runtime.sendMessage({method:"setItem",key:key, value:value}, function(received) {
 		if(received) {
 			console.log(" saved successfully"); 
@@ -30,16 +53,22 @@ function initAngular() {
 	listApp.controller("ListCtrl", ["$scope", "$q", function($scope, $q) {
 		$scope.name = "hello name";
 		$scope.list = [];
+		$scope.showingList = false;
 
 		$scope.setItem = function(key) {
-			var value;
-			var object;
-			console.log("hello");
+			var object = { key : key };
+			var objectValidated;
 			if(key == "adObject") {
-				//construct adObject from page
-				object.url = document.URL;
+				objectValidated = setAdObjectValues(object);	
+			} else {
+				objectValidated = false;
 			}
-			setItem(object, chromeSetItem);
+			console.log("object is", object);
+			if(objectValidated) {
+				setItem(CONST_KEY_AD_OBJECT, object);
+			} else {
+				console.log("object was not validated");
+			}
 		}
 
 		$scope.getItem = function(key) {
@@ -48,8 +77,15 @@ function initAngular() {
 			object.key = key;
 			object.index = 0;
 			object.callback = function(){ console.log("in object.callback")};
-			getItem(object, chromeGetItem);
+			getItem(object, function() {
+				console.log("back from getItem");
+			});
 		}
+
+		$scope.showList = function() {
+			$scope.showingList = !$scope.showingList;
+		}
+
 	}]);
 }
 /*
@@ -73,21 +109,29 @@ function initAngular() {
 			
 	}]);
 */
+function setAdObjectValues(object) {
+	object.posting_title = $(".postingtitle").text();
+	object.posting_body = $("#postingbody").text();
+	object.posting_url = document.URL;
+	object.type = "ad_info";
+	object.image_src = $("#ci img").attr("src");
 
+	if(object.posting_body == ""
+		|| object.posting_body == undefined
+		|| object.posting_title == ""
+		|| object.posting_title == undefined) {
+		return false;
+	}
+
+	return true;
+}
 
 
 chrome.extension.onMessage.addListener(
 	function(request, sender, sendResponse) {
-		console.log("onMessage ..." + request);
+		console.log("onMessage ...", request);
 			
 	});
-
-
-
-
-
-
-
 
 var browser = new function() {
   this.name = "chrome",
