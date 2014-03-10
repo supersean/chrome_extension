@@ -1,6 +1,4 @@
 
-this.poop = "poo";
-
 require(["constants/db_constants.js"], function(util) {
 	initBackground();
 });
