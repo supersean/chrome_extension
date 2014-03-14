@@ -1,15 +1,10 @@
 
-$.get(chrome.extension.getURL("constants/db_constants.js"), function(html) {
-	//Assuming your host supports both http and https
-	console.log(html);
-	var script = document.createElement('script');
-	script.setAttribute("type", "text/javascript");
-	script.setAttribute("src", chrome.extension.getURL("constants/db_constants.js"));
-	var head = document.head || document.getElementsByTagName( "head" )[0] || document.documentElement;
-	head.insertBefore(script, head.firstChild);
-	initPage();
-});	
+initPage();
 
+var CONST_KEY_AD_OBJECT = "adObject";
+var CONST_KEY_AD_OBJECTS = "adObjects";
+var CONST_KEY_SET_ITEM = "setItem";
+var CONST_KEY_GET_ITEM = "getItem";
 
 function initPage() {
 
@@ -27,9 +22,7 @@ function initPage() {
 			});
 		});
 	});
-	console.log(CONST_KEY_AD_OBJECT);
 	initAngular();
-
 }
 
 function getItem(key, callback) {
@@ -38,11 +31,12 @@ function getItem(key, callback) {
 	});	
 }
 
-function setItem(key, value) {
+function setItem(key, value, callback) {
 	console.log("content_script : setItem...",key, value)
 	chrome.runtime.sendMessage({method:"setItem",key:key, value:value}, function(received) {
 		if(received) {
 			console.log(" saved successfully"); 
+			callback();
 		}
 	});
 }
@@ -55,6 +49,19 @@ function initAngular() {
 		$scope.list = [];
 		$scope.showingList = false;
 
+		$scope.refreshItems = function() {
+			var object = {
+				key: CONST_KEY_AD_OBJECTS,
+			}
+			getItem(object, function(message) {
+				console.log("back...", message);
+				var list = message.value;
+				for(var i = 0; i < list.length; i++) {
+					console.log(list[i]);
+				}
+			});
+		}
+		
 		$scope.setItem = function(key) {
 			var object = { key : key };
 			var objectValidated;
@@ -65,7 +72,7 @@ function initAngular() {
 			}
 			console.log("object is", object);
 			if(objectValidated) {
-				setItem(CONST_KEY_AD_OBJECT, object);
+				setItem(CONST_KEY_AD_OBJECT, object, $scope.refreshItems);
 			} else {
 				console.log("object was not validated");
 			}
@@ -73,15 +80,20 @@ function initAngular() {
 
 		$scope.getItem = function(key) {
 			console.log("getItem item is ", key);
-			var object;
+			var object = {};
 			object.key = key;
 			object.index = 0;
 			object.callback = function(){ console.log("in object.callback")};
-			getItem(object, function() {
+			getItem(object, function(item) {
 				console.log("back from getItem");
 			});
 		}
 
+		$scope.clearAds = function() {
+			console.log("Clearing ads...");
+			
+		}
+		
 		$scope.showList = function() {
 			$scope.showingList = !$scope.showingList;
 		}
