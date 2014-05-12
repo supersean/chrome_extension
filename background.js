@@ -9,9 +9,9 @@ function initBackground() {
 			console.log("request is ", request);
 			console.log("method is ",request.method);
 			if(request.method == CONST_KEY_GET_ITEM) {
-				getItem(request.key, sendResponse);
+				getItem(request.itemInformation);
 			} else if (request.method == CONST_KEY_SET_ITEM) {
-				setItem(request, sendResponse);
+				setItem(request);
 			} else {
 				return false;
 			}
@@ -23,7 +23,7 @@ function checkForDiscordances() {
 	console.log("checkForDiscordances...");
 }
 
-function setItem(item, callback) {
+function setItem(item) {
 	console.log("setItem...", item);
 	//possibly validate item.value
 	if(item.key == CONST_KEY_AD_OBJECT) {
@@ -44,14 +44,14 @@ function setItem(item, callback) {
 			if(adObjects.ads == null) {
 				adObjects.ads = [];
 			}
-			saveAd(adObjects, item.value, callback);
+			saveAd(adObjects, item.value);
 		}); 
 	} else {
 		console.log("item.key not set correctly");
 	}
 }
 
-function saveAd(adObjects, value, callback) {
+function saveAd(adObjects, value) {
 	console.log("saveAd...", adObjects, value);
 	var adObj = {
 		index: adObjects.index,
@@ -66,40 +66,41 @@ function saveAd(adObjects, value, callback) {
 			checkForDiscordances();
 		} else {
 			console.log("Item saved successfully");
-			callback();
 		}
 	});
 }
 
 // key: adObject to get an adObject
 //			include index for this object
-function getItem(itemInformation, callback) {
-	var callback;
+function getItem(itemInformation) {
 	var key = itemInformation.key;
 	if(key == CONST_KEY_AD_OBJECT) {
-		chrome.storage.local.get("adObjects", function(dbObject) {
-		  var adObjects = dbObject.adObjects;
+		chrome.storage.local.get("adObjects", function(dbResult) {
+		  var adObjects = dbResult.adObjects;
 		  console.log("chrome.storage.local.get...", adObjects);
 			for(var i = 0; i < adObjects.ads.length; i++) {
 				if(adObjects.ads[i].index == itemInformation.index) {
-					callback(adObjects);
+					returnItem(adObjects[i], itemInformation.responseKey);
 				}
 			}
 		});	
 	} else if (key == CONST_KEY_AD_OBJECTS){
-		chrome.storage.local.get('adObjects', function(adObjects) {
-			callback(adObjects);
+		chrome.storage.local.get('adObjects', function(dbResult) {
+			returnItem(dbResult.adObjects.ads, itemInformation.responseKey);
 		});
 	}
 }
 
-function returnItem(item) {
+function returnItem(item, responseKey) {
 	console.log("returnItem...", item);	
-	chrome.tabs.getCurrent(function(tab) {
+	console.log("chrome is...", chrome.tabs);
+	chrome.tabs.query({ currentWindow: true, active: true}, function(tab) {
+		console.log('hello', tab);
 		var message = {
-				value: item
+				value: item,
+				responseKey:responseKey
 			}
-		chrome.tabs.sendMessage(tab.id,message, function() {
+		chrome.tabs.sendMessage(tab[0].id,message, function() {
 			console.log("sendMessage callback ...");	
 		});
 	});
