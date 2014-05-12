@@ -12,6 +12,8 @@ function initBackground() {
 				getItem(request.itemInformation);
 			} else if (request.method == CONST_KEY_SET_ITEM) {
 				setItem(request);
+			} else if (request.method == CONST_KEY_CLEAR) {
+				clear();
 			} else {
 				return false;
 			}
@@ -70,6 +72,21 @@ function saveAd(adObjects, value) {
 	});
 }
 
+function clear() {
+	console.log("clear...");
+	chrome.storage.local.set({
+		'adObjects': null
+	}, function() {
+		if(chrome.runtime.lastError) {
+			console.log('Error clearing storage...');
+		} else {
+			console.log("Clear successful");
+		}
+	});
+	//need to send a refresh request
+}
+
+
 // key: adObject to get an adObject
 //			include index for this object
 function getItem(itemInformation) {
@@ -93,7 +110,6 @@ function getItem(itemInformation) {
 
 function returnItem(item, responseKey) {
 	console.log("returnItem...", item);	
-	console.log("chrome is...", chrome.tabs);
 	chrome.tabs.query({ currentWindow: true, active: true}, function(tab) {
 		console.log('hello', tab);
 		var message = {
