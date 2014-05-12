@@ -1,12 +1,13 @@
-    <div id='side-bar' ng-show="showingList">
+    <div id='side-bar'>
       <ul>
         <li ng-repeat="item in list">
-          {{item.ad_title}},{{item.ad_body}},{{item.id}}
+			<div class="seans-row">
+				<h3>{{item.value.posting_title}}</h3>
+				<p>{{item.value.posting_body}}</p>
+			</div>
+			<hr>
         </li>
       </ul>
-      <p>
-        {{name}}
-      </p>
     </div>
 
 
