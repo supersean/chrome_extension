@@ -48,9 +48,12 @@
     "addons/require.js",
 		"navbar.html",
     "window.js",
-    "window.html",
+    "list_container.html",
+	"seans.html",
+	"craigs.html",
 		"adList.js",
 		"scripts.html",
+	"newworldorder.html",
     "list.html",
     "constants/db_constants.js"
 	]
