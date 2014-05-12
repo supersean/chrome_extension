@@ -5,6 +5,7 @@ var CONST_KEY_AD_OBJECT = "adObject";
 var CONST_KEY_AD_OBJECTS = "adObjects";
 var CONST_KEY_SET_ITEM = "setItem";
 var CONST_KEY_GET_ITEM = "getItem";
+var CONST_KEY_CLEAR = "clear";
 
 var listApp;
 
@@ -60,7 +61,11 @@ function initPage() {
 
 function getItem(object) {
 	
-	chrome.runtime.sendMessage({method:"getItem", itemInformation:object}, function(received){});	
+	chrome.runtime.sendMessage({method:"getItem", itemInformation:object}, function(received){
+		if(received) {
+			console.log("getItem message received");
+		}
+	});	
 }
 
 function setItem(key, value, callback) {
@@ -85,9 +90,9 @@ function initAngular() {
 			function(request, sender, sendResponse) {
 				console.log("onMessage ...", request);
 				if(request.responseKey == "refreshItems") {
-					$scope.refreshItems();
-				} else if (request.responseKey == "itemsToRefresh") {
-					for(var i = 0; i < request.value.length; i++) {
+					$scope.refreshItems(); //where is refreshItems
+				} else if (request.responseKey == "itemsToRefresh") { 
+					for(var i = 0; i < request.value.length; i++) { // need to clear items first
 						$scope.list.push(request.value[i]);
 					}
 					console.log('list:',$scope.list);
@@ -130,7 +135,11 @@ function initAngular() {
 
 		$scope.clearAds = function() {
 			console.log("Clearing ads...");
-			
+			chrome.runtime.sendMessage({method:CONST_KEY_CLEAR}, function(received) {
+				if(received) {
+					console.log("clear request received");
+				}
+			});
 		}
 		
 		$scope.toggleList = function() {
