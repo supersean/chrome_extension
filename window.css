@@ -7,6 +7,13 @@
   line-height: 20px;
 }
 
+.seans-row > p > a, .seans-row > p {
+	background-color:#f7e7bd;
+	width:200px;
+	min-height:50px;
+	overflow:hidden;
+}
+
 /*
 .deleter {
 	float:right;
