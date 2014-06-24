@@ -68,6 +68,7 @@ function saveAd(adObjects, value) {
 			checkForDiscordances();
 		} else {
 			console.log("Item saved successfully");
+			sendRefresh();
 		}
 	});
 }
@@ -81,11 +82,18 @@ function clear() {
 			console.log('Error clearing storage...');
 		} else {
 			console.log("Clear successful");
+			sendRefresh();
 		}
 	});
 	//need to send a refresh request
 }
 
+function sendRefresh() {
+	var request = {};
+	request.key = CONST_KEY_AD_OBJECTS;
+	request.responseKey = "refreshItems";
+	getItem(request);
+}
 
 // key: adObject to get an adObject
 //			include index for this object
@@ -103,6 +111,10 @@ function getItem(itemInformation) {
 		});	
 	} else if (key == CONST_KEY_AD_OBJECTS){
 		chrome.storage.local.get('adObjects', function(dbResult) {
+			if(dbResult.adObjects == null) {
+				dbResult.adObjects = {};
+				dbResult.adObjects.ads = [];
+			}
 			returnItem(dbResult.adObjects.ads, itemInformation.responseKey);
 		});
 	}
