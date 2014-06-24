@@ -1,9 +1,9 @@
     <div id='side-bar'>
       <ul>
         <li ng-repeat="item in list">
-			<div class="seans-row">
-				<h3>{{item.value.posting_title}}</h3>
-				<p>{{item.value.posting_body}}</p>
+			<div class="seans-row" ng-click="seans_row_clicked(item.value.posting_url)">
+				<p>{{item.value.posting_title}}</p>
+				<p  ng-hide="false">{{item.value.posting_body}}</p>
 			</div>
 			<hr>
         </li>
