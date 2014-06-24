@@ -27,6 +27,11 @@ function initPage() {
 					$(".body .userbody").prependTo("#craigs_container");
 					$(".body .postingtitle").prependTo("#craigs_container");
 					$(".body .dateReplyBar").prependTo("#craigs_container");
+					$("#container").prependTo("#craigs_container");
+					$(".blurbs").prependTo("#craigs_container");
+					$("#floater").prependTo("#craigs_container");
+					$("#toc_rows").prependTo("#craigs_container");
+					$(".favlistinfo").prependTo("#craigs_container");
 					$("#pagecontainer").attr('ng-app','listApp');
 					$("#pagecontainer").attr('ng-controller','ListCtrl');
 					angular.bootstrap(document.body, ['listApp']);
@@ -81,7 +86,7 @@ function setItem(key, value, callback) {
 function initAngular() {
 	console.log("initAngular ...");
 	listApp = angular.module('listApp', []);
-	listApp.controller("ListCtrl", ["$scope", "$q", function($scope, $q) {
+	listApp.controller("ListCtrl", ["$scope", "$location", "$window", "$q", function($scope, $location, $window, $q) {
 		$scope.name = "hello name";
 		$scope.list = [];
 		$scope.showingList = false;
@@ -89,9 +94,9 @@ function initAngular() {
 		$scope.listener = chrome.extension.onMessage.addListener(
 			function(request, sender, sendResponse) {
 				console.log("onMessage ...", request);
-				if(request.responseKey == "refreshItems") {
-					$scope.refreshItems(); //where is refreshItems
-				} else if (request.responseKey == "itemsToRefresh") { 
+				if(request.responseKey == "refreshItems") { 
+					$scope.list = [];
+					
 					for(var i = 0; i < request.value.length; i++) { // need to clear items first
 						$scope.list.push(request.value[i]);
 					}
@@ -101,11 +106,11 @@ function initAngular() {
 		});
 		
 		$scope.refreshItems = function() {
-			var object = {
+		/*	var object = {
 				key: CONST_KEY_AD_OBJECTS,
 				responseKey: "itemsToRefresh"
 			}
-			getItem(object);
+			getItem(object);*/
 		}
 		
 		$scope.setItem = function(key) {
@@ -142,11 +147,25 @@ function initAngular() {
 			});
 		}
 		
+		$scope.seans_row_clicked = function(url) {
+			console.log("url:",url);
+			$window.location.href = url;
+			$window.location.reload();
+		}
+		
 		$scope.toggleList = function() {
+			sendRefreshRequest();
 			$scope.showingList = !$scope.showingList;
 		}
 
 	}]);
+}
+
+function sendRefreshRequest() {
+	var request = {};
+	request.key = CONST_KEY_AD_OBJECTS;
+	request.responseKey = "refreshItems";
+	getItem(request);
 }
 
 function setAdObjectValues(object) {
@@ -165,3 +184,4 @@ function setAdObjectValues(object) {
 
 	return true;
 }
+
